@@ -17,3 +17,10 @@ export interface ApiResponse<T> {
   success: boolean;
   error?: string;
 }
+
+export const TokenType = {
+  FROM: "from",
+  TO: "to",
+} as const;
+
+export type TokenType = (typeof TokenType)[keyof typeof TokenType];

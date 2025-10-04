@@ -6,6 +6,7 @@ import { ExchangeRate } from "./components/ExchangeRate";
 import { ErrorMessage } from "./components/ErrorMessage";
 import { SubmitButton } from "./components/SubmitButton";
 import { Footer } from "./components/Footer";
+import { TokenType } from "./types";
 
 function App() {
   const {
@@ -49,7 +50,9 @@ function App() {
             onAmountChange={handleFromAmountChange}
             token={fromToken}
             tokens={tokens}
-            onTokenChange={(token) => handleTokenSelection(token, "from")}
+            onTokenChange={(token) =>
+              handleTokenSelection(token, TokenType.FROM)
+            }
             disabled={isSubmitting}
             label="Amount to send"
             placeholder="0.0"
@@ -63,10 +66,10 @@ function App() {
 
           <AmountInput
             amount={toAmount}
-            onAmountChange={() => {}} // Readonly
+            onAmountChange={() => {}}
             token={toToken}
             tokens={tokens}
-            onTokenChange={(token) => handleTokenSelection(token, "to")}
+            onTokenChange={(token) => handleTokenSelection(token, TokenType.TO)}
             readonly={true}
             label="Amount to receive"
             placeholder="0.0"
