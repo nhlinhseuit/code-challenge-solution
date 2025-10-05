@@ -51,15 +51,13 @@ const WalletPage: React.FC<Props> = (props: Props) => {
   const rows = sortedAndFilteredBalances.map((balance: WalletBalance) => {
     const usdValue = prices[balance.currency] * balance.amount;
 
-    const formattedAmount = balance.amount.toFixed(4);
-
     return (
       <WalletRow
         className={classes.row}
         key={balance.currency}
         amount={balance.amount}
         usdValue={usdValue}
-        formattedAmount={formattedAmount}
+        formattedAmount={balance.amount}
       />
     );
   });
