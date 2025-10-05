@@ -5,6 +5,7 @@ import { tokenApi } from "../services/api";
 
 export const useSwap = () => {
   const [tokens, setTokens] = useState<Token[]>([]);
+  const [userTokens, setUserTokens] = useState<Token[]>([]);
   const [fromToken, setFromToken] = useState<Token | null>(null);
   const [toToken, setToToken] = useState<Token | null>(null);
   const [fromAmount, setFromAmount] = useState<string>("");
@@ -22,11 +23,37 @@ export const useSwap = () => {
     const fetchTokens = async () => {
       try {
         setTokensLoading(true);
-        const response = await tokenApi.fetchTokens();
+
+        const [response] = await Promise.all([tokenApi.fetchTokens()]);
+
         if (response.success) {
           setTokens(response.data);
-          setFromToken(response.data[0]);
-          setToToken(response.data[2]);
+
+          const mockUserTokenBalances: Record<string, number> = {
+            BLUR: 125.5,
+            bNEO: 45.25,
+            BUSD: 1000.0,
+            USD: 5000.0,
+            ETH: 2.5,
+            GMX: 10.75,
+            STEVMOS: 500.0,
+            LUNA: 150.3,
+            RATOM: 75.0,
+            STRD: 200.0,
+            EVMOS: 300.5,
+            IBCX: 50.0,
+            IRIS: 100.0,
+          };
+
+          const mockUserTokenSymbols = Object.keys(mockUserTokenBalances);
+          const mockUserTokens = response.data
+            .filter((token) => mockUserTokenSymbols.includes(token.symbol))
+            .map((token) => ({
+              ...token,
+              balance: mockUserTokenBalances[token.symbol],
+            }));
+
+          setUserTokens(mockUserTokens);
         } else {
           setError("Failed to load tokens");
         }
@@ -40,6 +67,15 @@ export const useSwap = () => {
     fetchTokens();
   }, []);
 
+  const availableFromTokens = useMemo(() => {
+    return userTokens;
+  }, [userTokens]);
+
+  const availableToTokens = useMemo(() => {
+    if (!fromToken) return userTokens;
+    return userTokens.filter((token) => token.symbol !== fromToken.symbol);
+  }, [userTokens, fromToken]);
+
   const exchangeRate = useMemo(() => {
     if (fromToken && toToken) {
       return fromToken.price / toToken.price;
@@ -49,14 +85,30 @@ export const useSwap = () => {
 
   useEffect(() => {
     if (fromAmount && !isNaN(Number(fromAmount))) {
-      const result = (Number(fromAmount) * exchangeRate).toFixed(4);
+      const amount = Number(fromAmount);
+
+      if (
+        fromToken &&
+        fromToken.balance !== undefined &&
+        amount > fromToken.balance
+      ) {
+        setError(
+          `Insufficient balance. Maximum: ${fromToken.balance.toLocaleString()} ${
+            fromToken.symbol
+          }`
+        );
+        setToAmount("");
+        return;
+      }
+
+      const result = (amount * exchangeRate).toFixed(4);
       setToAmount(result);
       setError("");
     } else if (fromAmount === "") {
       setToAmount("");
       setError("");
     }
-  }, [fromAmount, exchangeRate]);
+  }, [fromAmount, exchangeRate, fromToken]);
 
   const handleFromAmountChange = useCallback((value: string) => {
     if (value === "") {
@@ -137,16 +189,25 @@ export const useSwap = () => {
     [fromToken, toToken, fromAmount, toAmount]
   );
 
-  const handleTokenSelection = useCallback((token: Token, type: TokenType) => {
-    if (type === TokenType.FROM) {
-      setFromToken(token);
-    } else {
-      setToToken(token);
-    }
-  }, []);
+  const handleTokenSelection = useCallback(
+    (token: Token, type: TokenType) => {
+      if (type === TokenType.FROM) {
+        setFromToken(token);
+        if (toToken && token.symbol === toToken.symbol) {
+          setToToken(null);
+        }
+      } else {
+        setToToken(token);
+      }
+    },
+    [toToken]
+  );
 
   return {
     tokens,
+    userTokens,
+    availableFromTokens,
+    availableToTokens,
     fromToken,
     toToken,
     fromAmount,

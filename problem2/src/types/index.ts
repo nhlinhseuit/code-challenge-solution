@@ -3,6 +3,7 @@ export interface Token {
   name: string;
   icon: string;
   price: number;
+  balance?: number;
 }
 
 export interface SwapFormData {

@@ -35,12 +35,25 @@
   margin-bottom: 8px;
 }
 
+.input-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
 .input-label {
   display: block;
   font-size: 14px;
   font-weight: 600;
   color: #6b7280;
-  margin-bottom: 8px;
+  margin-bottom: 0;
+}
+
+.token-balance {
+  font-size: 14px;
+  font-weight: 500;
+  color: #9ca3af;
 }
 
 .input-wrapper {
@@ -313,6 +326,7 @@
 
   .token-symbol {
     font-size: 14px;
+    color: #ffffff;
   }
 }
 

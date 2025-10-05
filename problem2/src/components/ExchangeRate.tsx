@@ -2,8 +2,8 @@ import React, { memo } from "react";
 import type { Token } from "../types";
 
 interface ExchangeRateProps {
-  fromToken: Token;
-  toToken: Token;
+  fromToken: Token | null;
+  toToken: Token | null;
   fromAmount: string;
   toAmount: string;
   exchangeRate: number;
@@ -12,7 +12,7 @@ interface ExchangeRateProps {
 
 export const ExchangeRate: React.FC<ExchangeRateProps> = memo(
   ({ fromToken, toToken, fromAmount, toAmount, exchangeRate, error }) => {
-    if (!fromAmount || !toAmount || error) {
+    if (!fromToken || !toToken || !fromAmount || !toAmount || error) {
       return null;
     }
 

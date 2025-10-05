@@ -10,7 +10,8 @@ import { TokenType } from "./types";
 
 function App() {
   const {
-    tokens,
+    availableFromTokens,
+    availableToTokens,
     fromToken,
     toToken,
     fromAmount,
@@ -26,7 +27,7 @@ function App() {
     handleTokenSelection,
   } = useSwap();
 
-  if (tokensLoading || !fromToken || !toToken) {
+  if (tokensLoading) {
     return (
       <div className="app">
         <div className="swap-container">
@@ -49,7 +50,7 @@ function App() {
             amount={fromAmount}
             onAmountChange={handleFromAmountChange}
             token={fromToken}
-            tokens={tokens}
+            tokens={availableFromTokens}
             onTokenChange={(token) =>
               handleTokenSelection(token, TokenType.FROM)
             }
@@ -61,14 +62,14 @@ function App() {
           <SwapButton
             onSwap={handleSwapTokens}
             isLoading={isLoading}
-            disabled={isSubmitting}
+            disabled={isSubmitting || !fromToken || !toToken}
           />
 
           <AmountInput
             amount={toAmount}
             onAmountChange={() => {}}
             token={toToken}
-            tokens={tokens}
+            tokens={availableToTokens}
             onTokenChange={(token) => handleTokenSelection(token, TokenType.TO)}
             readonly={true}
             label="Amount to receive"
@@ -89,7 +90,9 @@ function App() {
           <SubmitButton
             onSubmit={handleSubmit}
             isSubmitting={isSubmitting}
-            disabled={!fromAmount || !!error || isSubmitting}
+            disabled={
+              !fromAmount || !!error || isSubmitting || !fromToken || !toToken
+            }
           />
         </form>
 
