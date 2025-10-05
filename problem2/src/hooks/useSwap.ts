@@ -1,7 +1,26 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { tokenApi } from "../services/api";
 import type { Token } from "../types";
 import { TokenType } from "../types";
-import { tokenApi } from "../services/api";
+
+const mockUserTokenBalances: Array<{
+  symbol: string;
+  balance: number;
+}> = [
+  { symbol: "BLUR", balance: 125.5 },
+  { symbol: "bNEO", balance: 45.25 },
+  { symbol: "BUSD", balance: 1000.0 },
+  { symbol: "USD", balance: 5000.0 },
+  { symbol: "ETH", balance: 2.5 },
+  { symbol: "GMX", balance: 10.75 },
+  { symbol: "STEVMOS", balance: 500.0 },
+  { symbol: "LUNA", balance: 150.3 },
+  { symbol: "RATOM", balance: 75.0 },
+  { symbol: "STRD", balance: 200.0 },
+  { symbol: "EVMOS", balance: 300.5 },
+  { symbol: "IBCX", balance: 50.0 },
+  { symbol: "IRIS", balance: 100.0 },
+];
 
 export const useSwap = () => {
   const [tokens, setTokens] = useState<Token[]>([]);
@@ -29,29 +48,19 @@ export const useSwap = () => {
         if (response.success) {
           setTokens(response.data);
 
-          const mockUserTokenBalances: Record<string, number> = {
-            BLUR: 125.5,
-            bNEO: 45.25,
-            BUSD: 1000.0,
-            USD: 5000.0,
-            ETH: 2.5,
-            GMX: 10.75,
-            STEVMOS: 500.0,
-            LUNA: 150.3,
-            RATOM: 75.0,
-            STRD: 200.0,
-            EVMOS: 300.5,
-            IBCX: 50.0,
-            IRIS: 100.0,
-          };
-
-          const mockUserTokenSymbols = Object.keys(mockUserTokenBalances);
-          const mockUserTokens = response.data
-            .filter((token) => mockUserTokenSymbols.includes(token.symbol))
-            .map((token) => ({
-              ...token,
-              balance: mockUserTokenBalances[token.symbol],
-            }));
+          const mockUserTokens: Token[] = response.data
+            .filter((token) =>
+              mockUserTokenBalances.some((mock) => mock.symbol === token.symbol)
+            )
+            .map((token) => {
+              const balanceData = mockUserTokenBalances.find(
+                (mock) => mock.symbol === token.symbol
+              );
+              return {
+                ...token,
+                balance: balanceData?.balance,
+              };
+            });
 
           setUserTokens(mockUserTokens);
         } else {
