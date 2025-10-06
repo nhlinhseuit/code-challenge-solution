@@ -57,7 +57,7 @@ const WalletPage: React.FC<Props> = (props: Props) => {
         key={balance.currency}
         amount={balance.amount}
         usdValue={usdValue}
-        formattedAmount={balance.amount}
+        formattedAmount={balance.amount.toFixed()}
       />
     );
   });
