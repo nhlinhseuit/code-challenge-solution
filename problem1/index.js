@@ -1,9 +1,9 @@
-const sumToN_Loop = (n: number): number => {
+const sumToN_Loop = (n) => {
   if (!Number.isInteger(n) || n < 1) {
     return 0;
   }
 
-  let total: number = 0;
+  let total = 0;
 
   for (let i = 1; i <= n; i++) {
     total += i;
@@ -12,14 +12,14 @@ const sumToN_Loop = (n: number): number => {
   return total;
 };
 
-const sumToN_Formula = (n: number): number => {
+const sumToN_Formula = (n) => {
   if (!Number.isInteger(n) || n < 1) {
     return 0;
   }
   return (n * (n + 1)) / 2;
 };
 
-const sumToN_Recursion = (n: number): number => {
+const sumToN_Recursion = (n) => {
   if (n <= 0 || !Number.isInteger(n)) {
     return 0;
   }
